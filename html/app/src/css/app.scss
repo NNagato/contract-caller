@@ -1,0 +1,168 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+* {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-o-box-sizing: border-box;
+	-ms-box-sizing: border-box;
+	box-sizing: border-box; 
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+input, textarea {
+	outline: none;
+}
+
+button {
+	outline: none;
+	cursor: pointer;
+}
+
+#root {
+	.wrapper {
+		.title {
+			font-size: 45px;
+			text-align: center;
+			margin: 15px;
+		}
+		.content {
+			.container {
+				.result-label {
+					margin: 0 20%;
+					font-size: 18px;
+				}
+				.contract-error {
+					margin: 0 20%;
+					text-align: left;
+					color: #f72626;
+					font-size: 18px;
+				}
+				.contract {
+					margin: 35px 20%;
+					.label {
+						margin: 5px 0;
+						font-weight: 500;
+					}
+					&-address {
+						input {
+							width: 100%;
+							padding: 10px;
+						}
+					}
+					&-abi {
+						textarea {
+							width: 100%;
+							height: 100px;
+							padding: 10px;
+						}
+					}
+					&-submit {
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						button {
+							height: 45px;
+							width: 150px;
+							border: solid 1px #295cff;
+							border-radius: 3px;
+							background-color: #295cff;
+							color: white;
+							font-size: 15px;
+							&:hover {
+								background-color: #0b3dde;
+							}
+						}
+					}
+					&-method {
+						select {
+							width: 100%;
+							height: 35px;
+							padding: 0 10px;
+							font-size: 15px;
+							outline: none;
+							cursor: pointer;
+						}
+					}
+					&-params {
+						.param {
+							margin: 0 0 15px 0;
+							&-label {
+								display: flex;
+								font-size: 18px;
+								margin: 5px 0;
+								.name {
+									margin-right: 5px;
+								}
+							}
+							&-input {
+								input {
+									width: 100%;
+									height: 32px;
+									padding: 10px;
+								}
+							}
+						}
+					}
+					&-result {
+						margin-top: 6px;
+						height: 130px;
+						background-color: #eee;
+						border: solid 1px #bbb;
+						border-radius: 3px;
+						padding: 10px;
+						&_element {
+							color: #0576c7;
+							margin: 5px 0;
+						}
+					}
+				}
+			}
+		}
+	}
+}
