@@ -62,7 +62,8 @@ button {
 #root .wrapper .title {
   font-size: 45px;
   text-align: center;
-  margin: 15px; }
+  margin: 15px;
+  cursor: pointer; }
 #root .wrapper .content .container .result-label {
   margin: 0 20%;
   font-size: 18px; }

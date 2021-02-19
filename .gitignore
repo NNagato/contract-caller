@@ -1,3 +1,5 @@
 node_modules
 cmd/cmd
 cmd/contract.db
+html/app/src/App.css.map
+html/app/src/.sass-cache

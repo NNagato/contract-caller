@@ -1,7 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
 import React from "react";
-import Select from 'react-select';
 
 const baseURL = 'http://localhost:3001/contract'
 export default class App extends React.Component {
@@ -200,11 +199,26 @@ export default class App extends React.Component {
       </div>
     )
   }
+
+  reset() {
+    this.setState({
+      contract: '',
+      abi: '',
+      methods: null,
+      init: true,
+      error: '',
+      selectedMethod: '',
+      callData: {},
+      blockNumber: '',
+      result: []
+    })
+  }
  
   render() {
+    console.log(this.state)
     return (
       <div className="wrapper">
-        <div className="title">Contract Caller</div>
+        <div className="title" onClick={(e) => this.reset()}>Contract Caller</div>
         <div className="content">
           {this.state.init ? this.initLayout() : this.callLayout()}
         </div>
