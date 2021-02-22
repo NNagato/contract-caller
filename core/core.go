@@ -56,7 +56,7 @@ func (c *Core) getContractABIFromEtherscan(contract ethereum.Address) (string, e
 }
 
 // ContractMethods ...
-func (c *Core) ContractMethods(contract ethereum.Address, contractABI string) ([]common.Method, error) {
+func (c *Core) ContractMethods(contract ethereum.Address, contractABI string, rememberABI bool) ([]common.Method, error) {
 	l := c.l.With("func", "core/ContractMethods", "contract", contract.Hex())
 	if len(contractABI) == 0 {
 		var (
@@ -83,8 +83,10 @@ func (c *Core) ContractMethods(contract ethereum.Address, contractABI string) ([
 	if err != nil {
 		return nil, fmt.Errorf("cannot read abi, err: %s", err.Error())
 	}
-	if err := c.s.StoreContractABI(contract, contractABI); err != nil {
-		l.Errorw("cannot store contract abi", "err", err)
+	if rememberABI {
+		if err := c.s.StoreContractABI(contract, contractABI); err != nil {
+			l.Errorw("cannot store contract abi", "err", err)
+		}
 	}
 	var result []common.Method
 	for name, detail := range cABI.Methods {
@@ -234,6 +236,22 @@ func handleData(arg abi.Argument, ps string) (interface{}, error) {
 				arg.Name, typeName, ps)
 		}
 		return b, nil
+	case "bool[]":
+		ps = strings.ReplaceAll(ps, " ", "")
+		bools := strings.Split(ps, ",")
+		var bs []bool
+		for _, b := range bools {
+			switch b {
+			case "false":
+				bs = append(bs, false)
+			case "true":
+				bs = append(bs, true)
+			default:
+				return nil, fmt.Errorf("wrong data type, arg=%s, expected type=%s, actual value=%s",
+					arg.Name, typeName, ps)
+			}
+		}
+		return bs, nil
 	case "bytes", "int8", "bytes32":
 		if strings.Contains(ps, "0x") {
 			b, err := hexutil.Decode(ps)

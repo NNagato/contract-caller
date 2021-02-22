@@ -162,6 +162,36 @@ button {
 							margin: 5px 0;
 						}
 					}
+					&-check-box {
+						display: flex;
+    				align-items: center;
+						cursor: pointer;
+						position: relative;
+						.check-box {
+							width: 18px;
+							height: 18px;
+							border: solid 1px #295cff;
+							border-radius: 2px;
+							margin-right: 8px;
+						}
+						&__checked {
+							.check-box {
+								background-color: #295cff;
+							}
+							&::after {
+								content: '';
+								height: 8px;
+								width: 4px;
+								border-bottom: solid 2px white;
+								border-right: solid 2px white;
+								border-bottom-right-radius: 1px;
+								position: absolute;
+								transform: rotate(45deg);
+								left: 6px;
+								top: 3px;
+							}
+						}
+					}
 				}
 			}
 		}

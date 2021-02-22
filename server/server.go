@@ -39,8 +39,9 @@ func NewServer(host string, core *core.Core) *Server {
 }
 
 type inputMethods struct {
-	Contract string `json:"contract" binding:"required"`
-	ABI      string `json:"abi"`
+	Contract    string `json:"contract" binding:"required"`
+	ABI         string `json:"abi"`
+	RememberABI bool   `json:"rememberABI"`
 }
 
 func (s *Server) methods(c *gin.Context) {
@@ -63,7 +64,7 @@ func (s *Server) methods(c *gin.Context) {
 		)
 		return
 	}
-	result, err := s.core.ContractMethods(ethereum.HexToAddress(input.Contract), input.ABI)
+	result, err := s.core.ContractMethods(ethereum.HexToAddress(input.Contract), input.ABI, input.RememberABI)
 	if err != nil {
 		c.JSON(
 			http.StatusOK,

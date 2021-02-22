@@ -127,5 +127,29 @@ button {
     #root .wrapper .content .container .contract-result_element {
       color: #0576c7;
       margin: 5px 0; }
+  #root .wrapper .content .container .contract-check-box {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative; }
+    #root .wrapper .content .container .contract-check-box .check-box {
+      width: 18px;
+      height: 18px;
+      border: solid 1px #295cff;
+      border-radius: 2px;
+      margin-right: 8px; }
+    #root .wrapper .content .container .contract-check-box__checked .check-box {
+      background-color: #295cff; }
+    #root .wrapper .content .container .contract-check-box__checked::after {
+      content: '';
+      height: 8px;
+      width: 4px;
+      border-bottom: solid 2px white;
+      border-right: solid 2px white;
+      border-bottom-right-radius: 1px;
+      position: absolute;
+      transform: rotate(45deg);
+      left: 6px;
+      top: 3px; }
 
 /*# sourceMappingURL=App.css.map */
