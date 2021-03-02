@@ -22,6 +22,8 @@ var (
 	nodeFlag            = "node"
 	dbPathFlag          = "db-path"
 	defaultDBPath       = "contract.db"
+	staticPathFlag      = "static-path"
+	defaultStaticPath   = "../html/app/build"
 )
 
 func main() {
@@ -49,6 +51,11 @@ func main() {
 		Usage:  "db path",
 		Value:  defaultDBPath,
 		EnvVar: "DB_PATH",
+	}, cli.StringFlag{
+		Name:   staticPathFlag,
+		Usage:  "static data",
+		Value:  defaultStaticPath,
+		EnvVar: "STATIC_PATH",
 	},
 	)
 
@@ -77,5 +84,5 @@ func run(c *cli.Context) error {
 		return err
 	}
 	s := server.NewServer(c.String(hostHTTPFlag), core.NewCore(esc, ecli, str))
-	return s.Run()
+	return s.Run(c.String(staticPathFlag))
 }

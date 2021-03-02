@@ -137,7 +137,8 @@ func (s *Server) register() {
 }
 
 // Run ...
-func (s *Server) Run() error {
+func (s *Server) Run(staticPath string) error {
+	s.r.StaticFS("/", http.Dir(staticPath))
 	s.register()
 	return s.r.Run(s.host)
 }

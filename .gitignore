@@ -4,3 +4,4 @@ cmd/contract.db
 html/app/src/App.css.map
 html/app/src/.sass-cache
 *_test.db
+html/app/build
