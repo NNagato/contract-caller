@@ -37,7 +37,7 @@ export default class App extends React.Component {
         </div>
         <div className="contract contract-abi">
         <div className="label">Contract ABI</div>
-          <textarea placeholder="This is optional. If you leave it empty, we will try to look up the ABI in our database and Etherscan..." onChange={(e) => {this.handleChangeABI(e)}} value={this.state.abi}/>
+          <textarea onFocus={(e) => {this.setError('')}} placeholder="This is optional. If you leave it empty, we will try to look up the ABI in our database and Etherscan..." onChange={(e) => {this.handleChangeABI(e)}} value={this.state.abi}/>
         </div>
         {this.state.error == '' ? '' : <div className="contract-error">Error: {this.state.error}</div>}
         <div className={this.state.rememberABI ? "contract contract-check-box contract-check-box__checked" : "contract contract-check-box"} onClick={(e) => {this.setState({rememberABI: !this.state.rememberABI})}}>
@@ -52,6 +52,7 @@ export default class App extends React.Component {
   }
 
   verifyAndAccessContract() {
+    this.setError('')
     var data = {
       contract: this.state.contract,
       abi: String.raw`${this.state.abi}`,
@@ -85,7 +86,7 @@ export default class App extends React.Component {
 
   // contract call
   handleSelectChange = e => {
-    this.setState({selectedMethod: e.target.value, callData: {}})
+    this.setState({selectedMethod: e.target.value, callData: {}, error: ''})
   }
 
   handleInputChange = (e, name) => {
@@ -120,6 +121,7 @@ export default class App extends React.Component {
   }
 
   submitContractData() {
+    this.setError('')
     var data = {
       contract: this.state.contract,
       abi: String.raw`${this.state.abi}`,
@@ -216,7 +218,8 @@ export default class App extends React.Component {
       selectedMethod: '',
       callData: {},
       blockNumber: '',
-      result: []
+      result: [],
+      rememberABI: false
     })
   }
  
