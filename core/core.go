@@ -187,14 +187,14 @@ func (c *Core) CallContract(
 func handleData(arg abi.Argument, ps string) (interface{}, error) {
 	typeName := arg.Type.String()
 	switch typeName {
-	case "uint256", "int256":
+	case "uint256", "int256", "uint128", "int128":
 		b, ok := big.NewInt(0).SetString(ps, 10)
 		if !ok {
 			return nil, fmt.Errorf("wrong data type, arg=%s, expected type=%s, actual value=%s",
 				arg.Name, typeName, ps)
 		}
 		return b, nil
-	case "uint256[]", "int256[]":
+	case "uint256[]", "int256[]", "uint128[]", "int128[]":
 		ps = strings.ReplaceAll(ps, " ", "")
 		nums := strings.Split(ps, ",")
 		var bs []*big.Int
