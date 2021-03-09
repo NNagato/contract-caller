@@ -2,7 +2,9 @@ import logo from './logo.svg';
 import './App.css';
 import React from "react";
 
-const baseURL = 'http://localhost:3001/contract'
+// const baseURL = `${process.env.SERVER_URL}/contract`
+const apiURL = process.env.REACT_APP_API_URL ? process.env.REACT_APP_API_URL : 'http://localhost:3001'
+const baseURL = `${apiURL}/contract`
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -24,6 +26,7 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
+    console.log(baseURL)
     var url = `${baseURL}/network-info`
     fetch(url, {
       method: 'GET',
