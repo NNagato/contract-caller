@@ -84,6 +84,24 @@ button {
     width: 100%;
     height: 100px;
     padding: 10px; }
+  #root .wrapper .content .container .contract-network .network-info {
+    display: flex;
+    align-items: center; }
+    #root .wrapper .content .container .contract-network .network-info .name {
+      font-weight: 600; }
+    #root .wrapper .content .container .contract-network .network-info .change-button {
+      margin-left: 10px; }
+      #root .wrapper .content .container .contract-network .network-info .change-button button {
+        background: #295cff;
+        border: solid 1px #295cff;
+        border-radius: 2px;
+        color: white; }
+  #root .wrapper .content .container .contract-network #network-input {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px; }
+    #root .wrapper .content .container .contract-network #network-input::placeholder {
+      font-family: monospace; }
   #root .wrapper .content .container .contract-submit {
     display: flex;
     align-items: center;

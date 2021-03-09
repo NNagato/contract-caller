@@ -103,6 +103,32 @@ button {
 							padding: 10px;
 						}
 					}
+					&-network {
+						.network-info {
+							display: flex;
+							align-items: center;
+							.name {
+								font-weight: 600;	
+							}
+							.change-button {
+								margin-left: 10px;
+								button {
+									background: #295cff;
+									border: solid 1px #295cff;
+									border-radius: 2px;
+									color: white;
+								}
+							}
+						}
+						#network-input {
+							margin-top: 10px;
+							width: 100%;
+							padding: 10px;
+							&::placeholder {
+								font-family: monospace;
+							}
+						}
+					}
 					&-submit {
 						display: flex;
 						align-items: center;

@@ -83,6 +83,10 @@ func run(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	s := server.NewServer(c.String(hostHTTPFlag), core.NewCore(esc, ecli, str))
+	coreInstance, err := core.NewCore(esc, ecli, str)
+	if err != nil {
+		return err
+	}
+	s := server.NewServer(c.String(hostHTTPFlag), coreInstance)
 	return s.Run(c.String(staticPathFlag))
 }

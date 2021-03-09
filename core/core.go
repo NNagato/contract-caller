@@ -22,20 +22,48 @@ import (
 
 // Core ...
 type Core struct {
-	l    *zap.SugaredLogger
-	esc  *etherscan.Etherscan
-	ecli *ethclient.Client
-	s    *storage.Storage
+	l       *zap.SugaredLogger
+	esc     *etherscan.Etherscan
+	s       *storage.Storage
+	ecli    *ethclient.Client
+	network string
+}
+
+// networkFromNode returns network (difined by app) and network full name (readable)
+func networkFromNode(ecli *ethclient.Client) (string, error) {
+	chainID, err := ecli.ChainID(context.Background())
+	if err != nil {
+		return "", err
+	}
+	switch chainID.Int64() {
+	case 1:
+		return common.EthereumMainnet, nil
+	case 3:
+		return common.EthereumRopsten, nil
+	case 42:
+		return common.EthereumKovan, nil
+	case 56:
+		return common.BSCMainnet, nil
+	case 97:
+		return common.BSCTestnet, nil
+	default:
+		return common.UnknowNetwork, nil
+	}
 }
 
 // NewCore ...
-func NewCore(esc *etherscan.Etherscan, ecli *ethclient.Client, s *storage.Storage) *Core {
-	return &Core{
-		l:    zap.S(),
-		esc:  esc,
-		ecli: ecli,
-		s:    s,
+func NewCore(esc *etherscan.Etherscan, ecli *ethclient.Client, s *storage.Storage) (*Core, error) {
+	network, err := networkFromNode(ecli)
+	if err != nil {
+		return nil, err
 	}
+	return &Core{
+		l:       zap.S(),
+		esc:     esc,
+		ecli:    ecli,
+		s:       s,
+		network: network,
+	}, nil
 }
 
 // verifyContract ...
@@ -51,12 +79,12 @@ func (c *Core) verifyContract(contract ethereum.Address) error {
 }
 
 // getContractABIFromEtherscan ...
-func (c *Core) getContractABIFromEtherscan(contract ethereum.Address) (string, error) {
-	return c.esc.GetContractABI(contract)
+func (c *Core) getContractABIFromEtherscan(contract ethereum.Address, network string) (string, error) {
+	return c.esc.GetContractABI(contract, network)
 }
 
 // ContractMethods ...
-func (c *Core) ContractMethods(contract ethereum.Address, contractABI string, rememberABI bool) ([]common.Method, error) {
+func (c *Core) ContractMethods(contract ethereum.Address, contractABI string, rememberABI bool, network string) ([]common.Method, error) {
 	l := c.l.With("func", "core/ContractMethods", "contract", contract.Hex())
 	if len(contractABI) == 0 {
 		var (
@@ -68,7 +96,7 @@ func (c *Core) ContractMethods(contract ethereum.Address, contractABI string, re
 			l.Errorw("cannnot get abi from storage", "err", err)
 		}
 		if len(rawABI) == 0 {
-			rawABI, err = c.getContractABIFromEtherscan(contract)
+			rawABI, err = c.getContractABIFromEtherscan(contract, network)
 			if err != nil {
 				return nil, fmt.Errorf("cannot get contract ABI, err: %s", err.Error())
 			}
@@ -113,7 +141,8 @@ func (c *Core) CallContract(
 	contract ethereum.Address,
 	contractABI, methodName string,
 	blockNumber string,
-	params map[string]interface{}) (interface{}, error) {
+	params map[string]interface{},
+	customNode string) (interface{}, error) {
 
 	l := c.l.With("func", "core/CallContract", "contract", contract.Hex())
 	if contractABI == "" {
@@ -173,7 +202,17 @@ func (c *Core) CallContract(
 			}
 		}
 	}
-	caller := cc.NewContractCaller(cABI, c.ecli, contract)
+	var eclient *ethclient.Client
+	if customNode == "" {
+		eclient = c.ecli
+	} else {
+		var eErr error
+		eclient, eErr = ethclient.Dial(customNode)
+		if eErr != nil {
+			return nil, fmt.Errorf("cannot connect to given node, node=%s", customNode)
+		}
+	}
+	caller := cc.NewContractCaller(cABI, eclient, contract)
 	result, err := caller.Call(&bind.CallOpts{
 		BlockNumber: bn,
 	}, methodName, input...)
@@ -266,4 +305,16 @@ func handleData(arg abi.Argument, ps string) (interface{}, error) {
 		return nil, fmt.Errorf("wrong data type, arg=%s, expected type=%s, actual value=%s",
 			arg.Name, typeName, ps)
 	}
+}
+
+// NetworkInfo ...
+func (c *Core) NetworkInfo(node string) (string, error) {
+	if node == "" {
+		return c.network, nil
+	}
+	ecli, err := ethclient.Dial(node)
+	if err != nil {
+		return "", err
+	}
+	return networkFromNode(ecli)
 }

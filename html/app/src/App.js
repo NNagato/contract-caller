@@ -16,8 +16,24 @@ export default class App extends React.Component {
       callData: {},
       blockNumber: '',
       result: [],
-      rememberABI: false
+      rememberABI: false,
+      networkEndpoint: '',
+      network: '',
+      isChangingNetwork: false
     };
+  }
+
+  componentDidMount() {
+    var url = `${baseURL}/network-info`
+    fetch(url, {
+      method: 'GET',
+    }).then(response => response.json()).then(data => {
+      if (data.err) {
+        this.setError(data.err)
+        return
+      }
+      this.setState({network: data.data})
+    }).catch(err => this.setState({error: 'cannot get network info'}))
   }
 
   handleChangeContract(e) {
@@ -28,9 +44,44 @@ export default class App extends React.Component {
     this.setState({ abi: e.target.value });
   }
 
+  handleChangeNetwork() {
+    const isChangingNetwork = this.state.isChangingNetwork
+    if (isChangingNetwork) {
+      const input = document.getElementById("network-input").value
+      if (input == '') {
+        this.setState({isChangingNetwork: !isChangingNetwork})
+        return
+      }
+      const url = `${baseURL}/network-info?node=${input}`
+      fetch(url, {
+        method: 'GET',
+      }).then(response => response.json()).then(data => {
+        if (data.err) {
+          this.setError(data.err)
+          return
+        }
+        this.setState({network: data.data, isChangingNetwork: !isChangingNetwork, networkEndpoint: input})
+      }).catch(err => this.setState({error: err}))
+    } else {
+      this.setState({isChangingNetwork: !isChangingNetwork})
+    }
+  }
+
   initLayout() {
     return (
       <div className="container container-init-state">
+        <div className="contract contract-network">
+          <div className="network-info">
+            <div className="name">Current Network: <span>{this.state.network}</span></div>
+            <div className="change-button">
+              <button onClick={(e) => this.handleChangeNetwork()}>{this.state.isChangingNetwork ? 'done' : 'change'}</button>
+            </div>
+          </div>
+          {this.state.isChangingNetwork ? (
+            <div>
+              <input onFocus={(e) => this.setError('')} id="network-input" placeholder="To keep the old one, leave it empty and press done" type="text"/>
+            </div>) : ''}
+        </div>
         <div className="contract contract-address">
           <div className="label">Contract Address</div>
           <input onFocus={(e) => {this.setError('')}} onChange={(e) => {this.handleChangeContract(e)}} value={this.state.contract} type="text"/>
@@ -56,7 +107,8 @@ export default class App extends React.Component {
     var data = {
       contract: this.state.contract,
       abi: String.raw`${this.state.abi}`,
-      rememberABI: this.state.rememberABI
+      rememberABI: this.state.rememberABI,
+      network: this.state.network
     }
     var url = `${baseURL}/methods`
     fetch(url, {
@@ -127,7 +179,8 @@ export default class App extends React.Component {
       abi: String.raw`${this.state.abi}`,
       method: this.state.selectedMethod,
       params: this.state.callData,
-      blockNumber: this.state.blockNumber
+      blockNumber: this.state.blockNumber,
+      customNode: this.state.networkEndpoint
     }
     console.log(JSON.stringify(data))
     var url = `${baseURL}/call`

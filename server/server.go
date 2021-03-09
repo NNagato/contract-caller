@@ -42,6 +42,7 @@ type inputMethods struct {
 	Contract    string `json:"contract" binding:"required"`
 	ABI         string `json:"abi"`
 	RememberABI bool   `json:"rememberABI"`
+	Network     string `json:"network"`
 }
 
 func (s *Server) methods(c *gin.Context) {
@@ -64,7 +65,7 @@ func (s *Server) methods(c *gin.Context) {
 		)
 		return
 	}
-	result, err := s.core.ContractMethods(ethereum.HexToAddress(input.Contract), input.ABI, input.RememberABI)
+	result, err := s.core.ContractMethods(ethereum.HexToAddress(input.Contract), input.ABI, input.RememberABI, input.Network)
 	if err != nil {
 		c.JSON(
 			http.StatusOK,
@@ -89,6 +90,7 @@ type inputCall struct {
 	Method      string                 `json:"method" binding:"required"`
 	BlockNumber string                 `json:"blockNumber"`
 	Params      map[string]interface{} `json:"params"`
+	CustomNode  string                 `json:"customNode"`
 }
 
 func (s *Server) call(c *gin.Context) {
@@ -112,7 +114,7 @@ func (s *Server) call(c *gin.Context) {
 		return
 	}
 	result, err := s.core.CallContract(ethereum.HexToAddress(input.Contract), input.ABI,
-		input.Method, input.BlockNumber, input.Params)
+		input.Method, input.BlockNumber, input.Params, input.CustomNode)
 	if err != nil {
 		c.JSON(
 			http.StatusOK,
@@ -130,15 +132,36 @@ func (s *Server) call(c *gin.Context) {
 	)
 }
 
+func (s *Server) networkInfo(c *gin.Context) {
+	node := c.Query("node")
+	networkInfo, err := s.core.NetworkInfo(node)
+	if err != nil {
+		c.JSON(
+			http.StatusOK,
+			gin.H{
+				"err": err.Error(),
+			},
+		)
+		return
+	}
+	c.JSON(
+		http.StatusOK,
+		gin.H{
+			"data": networkInfo,
+		},
+	)
+}
+
 func (s *Server) register() {
 	g := s.r.Group("contract")
 	g.POST("/methods", s.methods)
 	g.POST("/call", s.call)
+	g.GET("/network-info", s.networkInfo)
 }
 
 // Run ...
 func (s *Server) Run(staticPath string) error {
-	s.r.StaticFS("/", http.Dir(staticPath))
+	s.r.StaticFS("/public", http.Dir(staticPath))
 	s.register()
 	return s.r.Run(s.host)
 }
